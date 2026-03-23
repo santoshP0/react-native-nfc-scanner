@@ -12,11 +12,6 @@ buildscript {
 apply plugin: "com.android.library"
 apply plugin: "kotlin-android"
 
-def isNewArchitectureEnabled() {
-  return rootProject.hasProperty("newArchEnabled") &&
-         rootProject.getProperty("newArchEnabled") == "true"
-}
-
 android {
   compileSdkVersion 34
   namespace "com.spo.nfcscanner"
@@ -24,10 +19,6 @@ android {
   defaultConfig {
     minSdkVersion 21
     targetSdkVersion 34
-  }
-
-  buildFeatures {
-    buildConfig true
   }
 
   buildTypes {
@@ -47,11 +38,7 @@ android {
 
   sourceSets {
     main {
-      if (isNewArchitectureEnabled()) {
-        java.srcDirs += ["src/newArch/java"]
-      } else {
-        java.srcDirs += ["src/oldArch/java"]
-      }
+      java.srcDirs += ["src/newArch/java"]
     }
   }
 }
