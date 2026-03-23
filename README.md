@@ -22,61 +22,78 @@ That's it. The package auto-links and wires itself into the Android lifecycle au
 
 ## Usage
 
+### Basic example
+
+Tap the button to start scanning. When a tag is detected it logs the result and stops automatically.
+
 ```tsx
-import React, { useRef, useState } from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
-import {
-  startScanning,
-  stopScanning,
-  addNfcListener,
-} from '@spo/react-native-nfc-scanner';
-import type { NfcTagEvent } from '@spo/react-native-nfc-scanner';
+import { Button, View } from 'react-native';
+import { startScanning, stopScanning, addNfcListener } from '@spo/react-native-nfc-scanner';
 
-export default function ScanScreen() {
-  const [scanning, setScanning] = useState(false);
-  const [tag, setTag] = useState<NfcTagEvent | null>(null);
-  const subscription = useRef<ReturnType<typeof addNfcListener> | null>(null);
-
-  async function handleScan() {
-    setTag(null);
-    setScanning(true);
-
-    subscription.current = addNfcListener('NfcTagScanned', (result) => {
-      setTag(result);
+function ScanScreen() {
+  async function scan() {
+    const sub = addNfcListener('NfcTagScanned', (tag) => {
+      console.log('Tag ID:', tag.tag);
+      console.log('Payload:', tag.payloads);
       stopScanning();
-      subscription.current?.remove();
-      setScanning(false);
+      sub.remove();
     });
 
     await startScanning();
   }
 
   return (
-    <View style={styles.container}>
-      <Button
-        title={scanning ? 'Scanning...' : 'Scan NFC Tag'}
-        onPress={handleScan}
-        disabled={scanning}
-      />
-
-      {tag && (
-        <View style={styles.result}>
-          <Text style={styles.label}>Tag ID</Text>
-          <Text>{tag.tag}</Text>
-
-          <Text style={styles.label}>Payload</Text>
-          <Text>{tag.payloads.length ? tag.payloads.join('\n') : 'No text content'}</Text>
-        </View>
-      )}
+    <View>
+      <Button title="Scan NFC Tag" onPress={scan} />
     </View>
   );
 }
+```
 
-const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', padding: 24 },
-  result:    { marginTop: 32, padding: 16, backgroundColor: '#f5f5f5', borderRadius: 8 },
-  label:     { fontWeight: 'bold', marginTop: 12, marginBottom: 4 },
-});
+---
+
+### `useNfc` hook
+
+Drop this hook into any screen that needs NFC — it handles start, stop, and cleanup for you.
+
+```tsx
+// hooks/useNfc.ts
+import { useCallback } from 'react';
+import { startScanning, stopScanning, addNfcListener } from '@spo/react-native-nfc-scanner';
+import type { NfcTagEvent } from '@spo/react-native-nfc-scanner';
+
+export function useNfc() {
+  const scan = useCallback((onTag: (tag: NfcTagEvent) => void) => {
+    const sub = addNfcListener('NfcTagScanned', (tag) => {
+      onTag(tag);
+      stopScanning();
+      sub.remove();
+    });
+
+    startScanning();
+  }, []);
+
+  return { scan };
+}
+```
+
+```tsx
+// Any screen
+import { Button, View } from 'react-native';
+import { useNfc } from './hooks/useNfc';
+
+function ScanScreen() {
+  const { scan } = useNfc();
+
+  return (
+    <View>
+      <Button
+        title="Scan NFC Tag"
+        onPress={() => scan((tag) => console.log(tag))}
+      />
+    </View>
+  );
+}
 ```
 
 ---
