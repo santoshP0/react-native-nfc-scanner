@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+
+# TypeScript build output
+lib/
+
+# Android build artifacts
+android/build/
+android/.gradle/
+android/.idea/
+android/local.properties
+android/*.iml
+
+# macOS
+.DS_Store
+
+# npm pack artifact
+*.tgz
+
+# Logs
+*.log
+npm-debug.log*

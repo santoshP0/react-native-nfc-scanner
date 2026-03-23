@@ -1,0 +1,26 @@
+# Source (compiled output in lib/ is what gets published)
+# Note: src/ is intentionally included for react-native field resolution
+
+# Android build artifacts
+android/build/
+android/.gradle/
+android/.idea/
+android/*.iml
+android/local.properties
+
+# Dev / tooling
+node_modules/
+.git/
+.github/
+__tests__/
+__mocks__/
+coverage/
+.eslintrc*
+.prettierrc*
+.editorconfig
+jest.config.*
+babel.config.*
+
+# Misc
+.DS_Store
+*.log

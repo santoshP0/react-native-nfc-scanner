@@ -1,0 +1,63 @@
+{
+  "name": "@spo/react-native-nfc-scanner",
+  "version": "1.0.0",
+  "description": "Android NFC scanner for React Native — supports both foreground and background scanning with latest RN compatibility",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "react-native": "src/index.ts",
+  "source": "src/index.ts",
+  "files": [
+    "src",
+    "lib",
+    "android",
+    "!android/build",
+    "!android/.gradle",
+    "!**/__tests__",
+    "!**/__fixtures__",
+    "!**/__mocks__"
+  ],
+  "keywords": [
+    "react-native",
+    "android",
+    "nfc",
+    "nfc-scanner",
+    "foreground-dispatch",
+    "background-nfc",
+    "ndef",
+    "mifare"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/spo/react-native-nfc-scanner.git"
+  },
+  "author": "Santosh Kumar",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/spo/react-native-nfc-scanner/issues"
+  },
+  "homepage": "https://github.com/spo/react-native-nfc-scanner#readme",
+  "codegenConfig": {
+    "name": "NfcManagerSpec",
+    "type": "modules",
+    "jsSrcsDir": "src/specs",
+    "android": {
+      "javaPackageName": "com.spo.nfcscanner"
+    }
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "react-native": ">=0.70.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "@types/react": "^18.0.0",
+    "@types/react-native": "^0.73.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "prepare": "npm run build"
+  },
+  "engines": {
+    "node": ">=16"
+  }
+}

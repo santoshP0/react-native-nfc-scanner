@@ -1,0 +1,67 @@
+buildscript {
+  repositories {
+    google()
+    mavenCentral()
+  }
+  dependencies {
+    classpath "com.android.tools.build:gradle:8.1.1"
+    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.0"
+  }
+}
+
+apply plugin: "com.android.library"
+apply plugin: "kotlin-android"
+
+def isNewArchitectureEnabled() {
+  return rootProject.hasProperty("newArchEnabled") &&
+         rootProject.getProperty("newArchEnabled") == "true"
+}
+
+android {
+  compileSdkVersion 34
+  namespace "com.spo.nfcscanner"
+
+  defaultConfig {
+    minSdkVersion 21
+    targetSdkVersion 34
+  }
+
+  buildFeatures {
+    buildConfig true
+  }
+
+  buildTypes {
+    release {
+      minifyEnabled false
+    }
+  }
+
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
+
+  kotlinOptions {
+    jvmTarget = "1.8"
+  }
+
+  sourceSets {
+    main {
+      if (isNewArchitectureEnabled()) {
+        java.srcDirs += ["src/newArch/java"]
+      } else {
+        java.srcDirs += ["src/oldArch/java"]
+      }
+    }
+  }
+}
+
+repositories {
+  google()
+  mavenCentral()
+}
+
+dependencies {
+  implementation "com.facebook.react:react-android:+"
+  implementation "org.jetbrains.kotlin:kotlin-stdlib:1.9.0"
+}

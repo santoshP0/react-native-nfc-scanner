@@ -1,0 +1,53 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  package="com.spo.nfcscanner">
+
+  <!-- NFC permissions — automatically merged into the consumer app's manifest -->
+  <uses-permission android:name="android.permission.NFC" />
+  <uses-permission android:name="android.permission.VIBRATE" />
+  <uses-feature android:name="android.hardware.nfc" android:required="false" />
+  <uses-feature android:name="android.hardware.nfc.hce" android:required="false" />
+
+  <application>
+
+    <!--
+      Headless activity for background NFC dispatch.
+      Starts disabled (android:enabled="false") — NfcController enables it
+      dynamically only when startScanning() is called from JS.
+    -->
+    <activity
+      android:name=".nfc.NfcDispatchActivity"
+      android:exported="true"
+      android:launchMode="singleTop"
+      android:excludeFromRecents="true"
+      android:enabled="false"
+      android:taskAffinity="">
+      <intent-filter>
+        <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <data android:mimeType="text/plain" />
+      </intent-filter>
+      <intent-filter>
+        <action android:name="android.nfc.action.TAG_DISCOVERED" />
+        <category android:name="android.intent.category.DEFAULT" />
+      </intent-filter>
+      <intent-filter>
+        <action android:name="android.nfc.action.TECH_DISCOVERED" />
+        <category android:name="android.intent.category.DEFAULT" />
+      </intent-filter>
+      <meta-data
+        android:name="android.nfc.action.TECH_DISCOVERED"
+        android:resource="@xml/nfc_tech_filter" />
+    </activity>
+
+    <!--
+      Lightweight service that disables NFC dispatch when the app is removed from recents.
+      android:stopWithTask="false" ensures it runs even after task removal.
+    -->
+    <service
+      android:name=".nfc.NfcLifecycleGuardService"
+      android:exported="false"
+      android:stopWithTask="false" />
+
+  </application>
+
+</manifest>
