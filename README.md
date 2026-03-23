@@ -22,46 +22,61 @@ That's it. The package auto-links and wires itself into the Android lifecycle au
 
 ## Usage
 
-### Quick start
-
 ```tsx
-import React, { useEffect, useState } from 'react';
-import { View, Text, Platform } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { View, Text, Button, StyleSheet } from 'react-native';
 import {
   startScanning,
   stopScanning,
-  isSupported,
-  isEnabled,
   addNfcListener,
 } from '@spo/react-native-nfc-scanner';
 import type { NfcTagEvent } from '@spo/react-native-nfc-scanner';
 
 export default function ScanScreen() {
+  const [scanning, setScanning] = useState(false);
   const [tag, setTag] = useState<NfcTagEvent | null>(null);
+  const subscription = useRef<ReturnType<typeof addNfcListener> | null>(null);
 
-  useEffect(() => {
-    if (Platform.OS !== 'android') return;
+  async function handleScan() {
+    setTag(null);
+    setScanning(true);
 
-    const sub = addNfcListener('NfcTagScanned', setTag);
+    subscription.current = addNfcListener('NfcTagScanned', (result) => {
+      setTag(result);
+      stopScanning();
+      subscription.current?.remove();
+      setScanning(false);
+    });
 
-    (async () => {
-      if (await isSupported() && await isEnabled()) {
-        await startScanning();
-      }
-    })();
-
-    return () => { stopScanning(); sub.remove(); };
-  }, []);
+    await startScanning();
+  }
 
   return (
-    <View>
-      {tag
-        ? <Text>Scanned: {tag.payloads.join(', ')}</Text>
-        : <Text>Hold an NFC tag near the device</Text>
-      }
+    <View style={styles.container}>
+      <Button
+        title={scanning ? 'Scanning...' : 'Scan NFC Tag'}
+        onPress={handleScan}
+        disabled={scanning}
+      />
+
+      {tag && (
+        <View style={styles.result}>
+          <Text style={styles.label}>Tag ID</Text>
+          <Text>{tag.tag}</Text>
+
+          <Text style={styles.label}>Payload</Text>
+          <Text>{tag.payloads.length ? tag.payloads.join('\n') : 'No text content'}</Text>
+        </View>
+      )}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: { flex: 1, justifyContent: 'center', padding: 24 },
+  result:    { marginTop: 32, padding: 16, backgroundColor: '#f5f5f5', borderRadius: 8 },
+  label:     { fontWeight: 'bold', marginTop: 12, marginBottom: 4 },
+});
 ```
 
 ---
@@ -95,99 +110,6 @@ interface NfcTagEvent {
 }
 ```
 
----
-
-## Examples
-
-### Prompt user to enable NFC
-
-```tsx
-import React, { useEffect, useState } from 'react';
-import { View, Text, Button, Platform } from 'react-native';
-import { isSupported, isEnabled, goToNfcSetting } from '@spo/react-native-nfc-scanner';
-
-export default function NfcGate({ children }: { children: React.ReactNode }) {
-  const [status, setStatus] = useState<'loading' | 'ready' | 'unsupported' | 'disabled'>('loading');
-
-  useEffect(() => {
-    if (Platform.OS !== 'android') { setStatus('ready'); return; }
-
-    (async () => {
-      if (!(await isSupported())) { setStatus('unsupported'); return; }
-      if (!(await isEnabled()))   { setStatus('disabled');    return; }
-      setStatus('ready');
-    })();
-  }, []);
-
-  if (status === 'loading')     return null;
-  if (status === 'unsupported') return <Text>NFC is not available on this device.</Text>;
-  if (status === 'disabled')    return (
-    <View>
-      <Text>NFC is turned off.</Text>
-      <Button title="Enable NFC" onPress={() => goToNfcSetting()} />
-    </View>
-  );
-
-  return <>{children}</>;
-}
-```
-
----
-
-### Reusable hook
-
-```tsx
-// hooks/useNfc.ts
-import { useEffect, useRef, useState } from 'react';
-import { Platform } from 'react-native';
-import {
-  startScanning, stopScanning,
-  isSupported, isEnabled, goToNfcSetting,
-  addNfcListener,
-} from '@spo/react-native-nfc-scanner';
-import type { NfcTagEvent } from '@spo/react-native-nfc-scanner';
-
-type Status = 'idle' | 'scanning' | 'unsupported' | 'disabled';
-
-export function useNfc(onTag: (tag: NfcTagEvent) => void) {
-  const [status, setStatus] = useState<Status>('idle');
-  const cb = useRef(onTag);
-  cb.current = onTag;
-
-  useEffect(() => {
-    if (Platform.OS !== 'android') return;
-
-    const sub = addNfcListener('NfcTagScanned', (t) => cb.current(t));
-
-    (async () => {
-      if (!(await isSupported())) { setStatus('unsupported'); return; }
-      if (!(await isEnabled()))   { setStatus('disabled');    return; }
-      await startScanning();
-      setStatus('scanning');
-    })();
-
-    return () => { stopScanning(); sub.remove(); };
-  }, []);
-
-  return { status, goToNfcSetting };
-}
-```
-
-```tsx
-// Using the hook
-import { useNfc } from './hooks/useNfc';
-
-function ScanScreen() {
-  const { status, goToNfcSetting } = useNfc((tag) => {
-    console.log('Tag data:', tag.payloads);
-  });
-
-  if (status === 'unsupported') return <Text>NFC not available on this device</Text>;
-  if (status === 'disabled')    return <Button title="Enable NFC" onPress={goToNfcSetting} />;
-  if (status === 'scanning')    return <Text>Ready — hold a tag near the device</Text>;
-  return null;
-}
-```
 
 ---
 
