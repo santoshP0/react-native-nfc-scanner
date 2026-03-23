@@ -1,6 +1,8 @@
 import { NativeModules, NativeEventEmitter, Platform } from 'react-native';
 import type { NfcTagEvent, NfcEvent } from './types';
 
+declare const global: { __turboModuleProxy?: unknown };
+
 const ANDROID_ONLY_ERROR =
   '@spo/react-native-nfc-scanner is Android only. ' +
   'Wrap calls in Platform.OS === "android" checks.';
