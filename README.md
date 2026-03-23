@@ -1,10 +1,10 @@
-# @spo/react-native-nfc-scanner
+# @santoshpk/react-native-nfc-scanner
 
 Android NFC scanning for React Native. Supports foreground and background scanning out of the box.
 
 > **Android only.** Requires React Native 0.79+.
 
-[![npm version](https://img.shields.io/npm/v/@spo/react-native-nfc-scanner)](https://www.npmjs.com/package/@spo/react-native-nfc-scanner)
+[![npm version](https://img.shields.io/npm/v/@santoshpk/react-native-nfc-scanner)](https://www.npmjs.com/package/@santoshpk/react-native-nfc-scanner)
 [![Platform](https://img.shields.io/badge/platform-Android-green)](https://developer.android.com/guide/topics/connectivity/nfc)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -13,7 +13,7 @@ Android NFC scanning for React Native. Supports foreground and background scanni
 ## Installation
 
 ```sh
-npm install @spo/react-native-nfc-scanner
+npm install @santoshpk/react-native-nfc-scanner
 ```
 
 That's it. The package auto-links and wires itself into the Android lifecycle automatically. No `MainApplication` or `MainActivity` changes needed.
@@ -31,7 +31,7 @@ import {
   isEnabled,
   goToNfcSetting,
   addNfcListener,
-} from '@spo/react-native-nfc-scanner';
+} from '@santoshpk/react-native-nfc-scanner';
 
 function ScanScreen() {
   async function scan() {

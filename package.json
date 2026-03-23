@@ -1,5 +1,5 @@
 {
-  "name": "@spo/react-native-nfc-scanner",
+  "name": "@santoshpk/react-native-nfc-scanner",
   "version": "1.0.0",
   "description": "Android NFC scanner for React Native — supports both foreground and background scanning with latest RN compatibility",
   "main": "lib/index.js",
@@ -29,14 +29,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/spo/react-native-nfc-scanner.git"
+    "url": "https://github.com/santoshP0/react-native-nfc-scanner.git"
   },
   "author": "Santosh Kumar",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/spo/react-native-nfc-scanner/issues"
+    "url": "https://github.com/santoshP0/react-native-nfc-scanner/issues"
   },
-  "homepage": "https://github.com/spo/react-native-nfc-scanner#readme",
+  "homepage": "https://github.com/santoshP0/react-native-nfc-scanner#readme",
   "codegenConfig": {
     "name": "NfcManagerSpec",
     "type": "modules",

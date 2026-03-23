@@ -4,14 +4,12 @@ import type { NfcTagEvent, NfcEvent } from './types';
 declare const global: { __turboModuleProxy?: unknown };
 
 const ANDROID_ONLY_ERROR =
-  '@spo/react-native-nfc-scanner is Android only. ' +
+  '@santoshpk/react-native-nfc-scanner is Android only. ' +
   'Wrap calls in Platform.OS === "android" checks.';
 
 const LINKING_ERROR =
-  `The package '@spo/react-native-nfc-scanner' doesn't seem to be linked.\n\n` +
-  `Make sure to:\n` +
-  `1. Add NfcManagerPackage() to your MainApplication\n` +
-  `2. Rebuild the Android app (npx react-native run-android)\n`;
+  `The package '@santoshpk/react-native-nfc-scanner' doesn't seem to be linked.\n\n` +
+  `Make sure to rebuild the Android app: npx react-native run-android\n`;
 
 function getNativeModule() {
   if (Platform.OS !== 'android') return null;
