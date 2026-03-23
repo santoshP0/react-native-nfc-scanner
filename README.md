@@ -22,75 +22,51 @@ That's it. The package auto-links and wires itself into the Android lifecycle au
 
 ## Usage
 
-### Basic example
-
-Tap the button to start scanning. When a tag is detected it logs the result and stops automatically.
-
 ```tsx
 import { Button, View } from 'react-native';
-import { startScanning, stopScanning, addNfcListener } from '@spo/react-native-nfc-scanner';
+import {
+  startScanning,
+  stopScanning,
+  isSupported,
+  isEnabled,
+  goToNfcSetting,
+  addNfcListener,
+} from '@spo/react-native-nfc-scanner';
 
 function ScanScreen() {
   async function scan() {
+    // Check if the device has NFC hardware
+    const supported = await isSupported();
+    if (!supported) {
+      console.log('NFC is not supported on this device');
+      return;
+    }
+
+    // Check if NFC is turned on in settings
+    const enabled = await isEnabled();
+    if (!enabled) {
+      // Opens Android NFC settings so the user can turn it on
+      await goToNfcSetting();
+      return;
+    }
+
+    // Listen for a tag — fires when a tag is scanned
     const sub = addNfcListener('NfcTagScanned', (tag) => {
       console.log('Tag ID:', tag.tag);
-      console.log('Payload:', tag.payloads);
+      console.log('NDEF payload:', tag.payloads);
+
+      // Stop scanning and clean up once we have the result
       stopScanning();
       sub.remove();
     });
 
+    // Start scanning
     await startScanning();
   }
 
   return (
     <View>
       <Button title="Scan NFC Tag" onPress={scan} />
-    </View>
-  );
-}
-```
-
----
-
-### `useNfc` hook
-
-Drop this hook into any screen that needs NFC — it handles start, stop, and cleanup for you.
-
-```tsx
-// hooks/useNfc.ts
-import { useCallback } from 'react';
-import { startScanning, stopScanning, addNfcListener } from '@spo/react-native-nfc-scanner';
-import type { NfcTagEvent } from '@spo/react-native-nfc-scanner';
-
-export function useNfc() {
-  const scan = useCallback((onTag: (tag: NfcTagEvent) => void) => {
-    const sub = addNfcListener('NfcTagScanned', (tag) => {
-      onTag(tag);
-      stopScanning();
-      sub.remove();
-    });
-
-    startScanning();
-  }, []);
-
-  return { scan };
-}
-```
-
-```tsx
-// Any screen
-import { Button, View } from 'react-native';
-import { useNfc } from './hooks/useNfc';
-
-function ScanScreen() {
-  const { scan } = useNfc();
-
-  return (
-    <View>
-      <Button
-        title="Scan NFC Tag"
-        onPress={() => scan((tag) => console.log(tag))}
-      />
     </View>
   );
 }
