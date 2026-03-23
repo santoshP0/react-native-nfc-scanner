@@ -2,7 +2,7 @@
 
 Android NFC scanning for React Native. Supports foreground and background scanning out of the box.
 
-> **Android only.** Requires React Native 0.71+.
+> **Android only.** Requires React Native 0.79+.
 
 [![npm version](https://img.shields.io/npm/v/@spo/react-native-nfc-scanner)](https://www.npmjs.com/package/@spo/react-native-nfc-scanner)
 [![Platform](https://img.shields.io/badge/platform-Android-green)](https://developer.android.com/guide/topics/connectivity/nfc)
@@ -108,7 +108,7 @@ interface NfcTagEvent {
 
 ## Requirements
 
-- React Native **0.71+**
+- React Native **0.79+**
 - Android **API 21+**
 - Physical Android device with NFC (does not work on emulators)
 

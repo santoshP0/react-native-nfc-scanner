@@ -46,8 +46,8 @@
     }
   },
   "peerDependencies": {
-    "react": ">=18.0.0",
-    "react-native": ">=0.71.0"
+    "react": ">=18.3.0",
+    "react-native": ">=0.79.0"
   },
   "devDependencies": {
     "typescript": "^5.0.0",
