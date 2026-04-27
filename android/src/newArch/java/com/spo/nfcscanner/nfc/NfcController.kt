@@ -79,13 +79,14 @@ object NfcController {
     /** Enable reader mode on the given activity to intercept NFC tags directly. */
     fun enableReaderMode(activity: Activity?) {
         if (activity == null || nfcAdapter == null) return
+        if (!dispatchEnabled.get()) return
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             val options = Bundle()
             val flags = NfcAdapter.FLAG_READER_NFC_A or
                         NfcAdapter.FLAG_READER_NFC_B or
                         NfcAdapter.FLAG_READER_NFC_F or
                         NfcAdapter.FLAG_READER_NFC_V or
-                        NfcAdapter.FLAG_READER_NFC_BARCODE or
+                        (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) NfcAdapter.FLAG_READER_NFC_BARCODE else 0) or
                         NfcAdapter.FLAG_READER_NO_PLATFORM_SOUNDS
             val readerCallback = object : NfcAdapter.ReaderCallback {
                 override fun onTagDiscovered(tag: Tag?) {
@@ -125,7 +126,12 @@ object NfcController {
             return false
         }
 
-        val tag = intent.getParcelableExtra<Tag>(NfcAdapter.EXTRA_TAG)
+        val tag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.getParcelableExtra(NfcAdapter.EXTRA_TAG, Tag::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            intent.getParcelableExtra<Tag>(NfcAdapter.EXTRA_TAG)
+        }
         handleTag(tag)
         return true
     }
@@ -193,6 +199,28 @@ object NfcController {
                                 }
                             } else {
                                 ""
+                            }
+                        } else if (record != null &&
+                            record.tnf == NdefRecord.TNF_WELL_KNOWN &&
+                            record.type.contentEquals(NdefRecord.RTD_URI)
+                        ) {
+                            val payload = record.payload
+                            if (payload != null && payload.size > 1) {
+                                val uriPrefixes = arrayOf(
+                                    "", "http://www.", "https://www.", "http://", "https://",
+                                    "tel:", "mailto:", "ftp://anonymous:anonymous@", "ftp://ftp.",
+                                    "ftps://", "sftp://", "smb://", "nfs://", "ftp://",
+                                    "dav://", "news:", "telnet://", "imap:", "rtsp://",
+                                    "urn:", "pop:", "sip:", "sips:", "tftp:", "btspp://",
+                                    "btl2cap://", "btgoep://", "tcpobex://", "irdaobex://",
+                                    "file://", "urn:epc:id:", "urn:epc:tag:", "urn:epc:pat:",
+                                    "urn:epc:raw:", "urn:epc:", "urn:nfc:"
+                                )
+                                val prefixByte = payload[0].toInt() and 0xFF
+                                val prefix = if (prefixByte < uriPrefixes.size) uriPrefixes[prefixByte] else ""
+                                prefix + String(payload, 1, payload.size - 1, StandardCharsets.UTF_8)
+                            } else {
+                                record.payload?.let { String(it, StandardCharsets.UTF_8) } ?: ""
                             }
                         } else {
                             record?.payload?.let { String(it, StandardCharsets.UTF_8) } ?: ""

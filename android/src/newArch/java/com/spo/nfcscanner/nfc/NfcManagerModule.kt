@@ -50,8 +50,8 @@ class NfcManagerModule(context: ReactApplicationContext) :
     }
 
     override fun onHostDestroy() {
-        // Activity is being destroyed — clean up dispatch
         NfcController.disableDispatchHandling()
+        NfcController.setScanListener(null)
     }
 
     // ── ActivityEventListener ─────────────────────────────────────────────────
@@ -82,6 +82,7 @@ class NfcManagerModule(context: ReactApplicationContext) :
                 }
             })
             NfcController.enableDispatchHandling()
+            NfcController.enableReaderMode(currentActivity)
             promise.resolve(null)
         } catch (e: Exception) {
             NfcController.setScanListener(null)
@@ -91,6 +92,7 @@ class NfcManagerModule(context: ReactApplicationContext) :
 
     override fun stopScanning(promise: Promise) {
         try {
+            NfcController.disableReaderMode(currentActivity)
             NfcController.disableDispatchHandling()
             NfcController.setScanListener(null)
             promise.resolve(null)

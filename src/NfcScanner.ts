@@ -27,37 +27,50 @@ function getNativeModule() {
   return NativeModules.NfcManager;
 }
 
-const NfcNative = getNativeModule();
-const eventEmitter = NfcNative ? new NativeEventEmitter(NfcNative) : null;
+let _nfcNative: ReturnType<typeof getNativeModule> | undefined;
+let _eventEmitter: NativeEventEmitter | null | undefined;
+
+function getNfcNative() {
+  if (_nfcNative === undefined) {
+    _nfcNative = getNativeModule();
+    _eventEmitter = _nfcNative ? new NativeEventEmitter(_nfcNative) : null;
+  }
+  return _nfcNative;
+}
+
+function getEventEmitter() {
+  if (_eventEmitter === undefined) getNfcNative();
+  return _eventEmitter;
+}
 
 /** Start scanning for NFC tags. Tags are emitted via the 'NfcTagScanned' event. */
 export function startScanning(): Promise<void> {
-  if (!NfcNative) throw new Error(ANDROID_ONLY_ERROR);
-  return NfcNative.startScanning();
+  if (!getNfcNative()) throw new Error(ANDROID_ONLY_ERROR);
+  return getNfcNative()!.startScanning();
 }
 
 /** Stop scanning for NFC tags. */
 export function stopScanning(): Promise<void> {
-  if (!NfcNative) throw new Error(ANDROID_ONLY_ERROR);
-  return NfcNative.stopScanning();
+  if (!getNfcNative()) throw new Error(ANDROID_ONLY_ERROR);
+  return getNfcNative()!.stopScanning();
 }
 
 /** Returns true if the device hardware supports NFC. */
 export function isSupported(): Promise<boolean> {
-  if (!NfcNative) throw new Error(ANDROID_ONLY_ERROR);
-  return NfcNative.isSupported();
+  if (!getNfcNative()) throw new Error(ANDROID_ONLY_ERROR);
+  return getNfcNative()!.isSupported();
 }
 
 /** Returns true if NFC is enabled in device settings. */
 export function isEnabled(): Promise<boolean> {
-  if (!NfcNative) throw new Error(ANDROID_ONLY_ERROR);
-  return NfcNative.isEnabled();
+  if (!getNfcNative()) throw new Error(ANDROID_ONLY_ERROR);
+  return getNfcNative()!.isEnabled();
 }
 
 /** Opens the Android NFC settings screen. */
 export function goToNfcSetting(): Promise<boolean> {
-  if (!NfcNative) throw new Error(ANDROID_ONLY_ERROR);
-  return NfcNative.goToNfcSetting();
+  if (!getNfcNative()) throw new Error(ANDROID_ONLY_ERROR);
+  return getNfcNative()!.goToNfcSetting();
 }
 
 /**
@@ -72,6 +85,6 @@ export function addNfcListener(
   event: NfcEvent,
   callback: (data: NfcTagEvent) => void
 ) {
-  if (!eventEmitter) throw new Error(ANDROID_ONLY_ERROR);
-  return eventEmitter.addListener(event, callback);
+  if (!getEventEmitter()) throw new Error(ANDROID_ONLY_ERROR);
+  return getEventEmitter()!.addListener(event, callback);
 }
