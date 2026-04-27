@@ -25,11 +25,10 @@ class NfcManagerPackage : BaseReactPackage() {
                 NfcManagerModule.NAME to ReactModuleInfo(
                     NfcManagerModule.NAME,
                     NfcManagerModule.NAME,
-                    false,
-                    false,
-                    false,
-                    false,
-                    true // isTurboModule
+                    false, // canOverrideExistingModule
+                    false, // needsEagerInit
+                    false, // isCxxModule
+                    true   // isTurboModule
                 )
             )
         }
