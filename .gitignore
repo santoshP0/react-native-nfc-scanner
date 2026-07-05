@@ -20,3 +20,9 @@ android/*.iml
 # Logs
 *.log
 npm-debug.log*
+
+# Claude Code
+.claude/
+
+# Code review graph
+.code-review-graph/

@@ -2,7 +2,7 @@
 
 Android NFC scanning for React Native. Supports foreground and background scanning out of the box.
 
-> **Android only.** Requires React Native 0.79+.
+> **Android only.** Works with both New Architecture (TurboModules) and Old Architecture (Bridge).
 
 [![npm version](https://img.shields.io/npm/v/@santoshpk/react-native-nfc-scanner)](https://www.npmjs.com/package/@santoshpk/react-native-nfc-scanner)
 [![Platform](https://img.shields.io/badge/platform-Android-green)](https://developer.android.com/guide/topics/connectivity/nfc)
@@ -18,12 +18,17 @@ npm install @santoshpk/react-native-nfc-scanner
 
 Auto-links on install. No extra setup needed.
 
+The library automatically detects your architecture:
+- **New Architecture** (`newArchEnabled=true`) — uses TurboModules via JSI
+- **Old Architecture** — uses the standard React Native Bridge
+
 ---
 
 ## Usage
 
 ```tsx
-import { Button, View } from 'react-native';
+import { useEffect } from 'react';
+import { Button, Platform, View } from 'react-native';
 import {
   startScanning,
   stopScanning,
@@ -35,6 +40,8 @@ import {
 
 function ScanScreen() {
   async function scan() {
+    if (Platform.OS !== 'android') return;
+
     const supported = await isSupported();
     if (!supported) return console.log('NFC not supported');
 
@@ -72,6 +79,8 @@ function ScanScreen() {
 | `goToNfcSetting()` | `Promise<boolean>` | Open Android NFC settings |
 | `addNfcListener(event, cb)` | `EmitterSubscription` | Subscribe to scan events. Call `.remove()` to unsubscribe |
 
+All methods throw if called on iOS. Guard with `Platform.OS === 'android'`.
+
 ### Events
 
 | Event | Payload |
@@ -90,9 +99,21 @@ interface NfcTagEvent {
 
 ---
 
+## Permissions
+
+The library automatically merges the following into your app's manifest:
+
+- `android.permission.NFC`
+- `android.permission.VIBRATE` (haptic feedback on scan)
+- `android.hardware.nfc` feature (declared as optional)
+
+No manual manifest edits required.
+
+---
+
 ## Requirements
 
-- React Native **0.79+**
+- React Native **0.71+**
 - Android **API 21+**
 - Physical device with NFC
 

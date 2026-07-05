@@ -126,11 +126,11 @@ object NfcController {
             return false
         }
 
-        val tag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        val tag: Tag? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             intent.getParcelableExtra(NfcAdapter.EXTRA_TAG, Tag::class.java)
         } else {
             @Suppress("DEPRECATION")
-            intent.getParcelableExtra<Tag>(NfcAdapter.EXTRA_TAG)
+            intent.getParcelableExtra(NfcAdapter.EXTRA_TAG)
         }
         handleTag(tag)
         return true

@@ -38,7 +38,11 @@ android {
 
   sourceSets {
     main {
-      java.srcDirs += ["src/newArch/java"]
+      if (rootProject.hasProperty("newArchEnabled") && rootProject.newArchEnabled == "true") {
+        java.srcDirs += ["src/newArch/java"]
+      } else {
+        java.srcDirs += ["src/oldArch/java"]
+      }
     }
   }
 }
@@ -49,6 +53,7 @@ repositories {
 }
 
 dependencies {
+  //noinspection GradleDynamicVersion
   implementation "com.facebook.react:react-android:+"
   implementation "org.jetbrains.kotlin:kotlin-stdlib:1.9.0"
 }
