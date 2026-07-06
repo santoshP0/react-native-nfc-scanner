@@ -9,8 +9,16 @@ buildscript {
   }
 }
 
+def isNewArchitectureEnabled() {
+  return rootProject.hasProperty("newArchEnabled") && rootProject.getProperty("newArchEnabled") == "true"
+}
+
 apply plugin: "com.android.library"
 apply plugin: "kotlin-android"
+
+if (isNewArchitectureEnabled()) {
+  apply plugin: "com.facebook.react"
+}
 
 android {
   compileSdkVersion 34
@@ -42,7 +50,7 @@ android {
 
   sourceSets {
     main {
-      if (rootProject.hasProperty("newArchEnabled") && rootProject.newArchEnabled == "true") {
+      if (isNewArchitectureEnabled()) {
         java.srcDirs += ["src/newArch/java"]
       } else {
         java.srcDirs += ["src/oldArch/java"]
