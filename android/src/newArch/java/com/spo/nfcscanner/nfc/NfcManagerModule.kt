@@ -56,13 +56,12 @@ class NfcManagerModule(context: ReactApplicationContext) :
 
     // ── ActivityEventListener ─────────────────────────────────────────────────
 
-    override fun onNewIntent(intent: Intent?) {
-        // Route NFC intents received while the app is backgrounded
+    override fun onNewIntent(intent: Intent) {
         NfcController.handleIntent(intent)
     }
 
     override fun onActivityResult(
-        activity: Activity?,
+        activity: Activity,
         requestCode: Int,
         resultCode: Int,
         data: Intent?

@@ -53,12 +53,12 @@ class NfcManagerModule(context: ReactApplicationContext) :
 
     // ── ActivityEventListener ─────────────────────────────────────────────────
 
-    override fun onNewIntent(intent: Intent?) {
+    override fun onNewIntent(intent: Intent) {
         NfcController.handleIntent(intent)
     }
 
     override fun onActivityResult(
-        activity: Activity?,
+        activity: Activity,
         requestCode: Int,
         resultCode: Int,
         data: Intent?
