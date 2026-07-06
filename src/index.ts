@@ -4,6 +4,7 @@ export {
   isSupported,
   isEnabled,
   goToNfcSetting,
+  preventDefaultNfcScreen,
   addNfcListener,
 } from './NfcScanner';
 

@@ -123,6 +123,15 @@ class NfcManagerModule(context: ReactApplicationContext) :
         }
     }
 
+    override fun preventDefaultNfcScreen(enabled: Boolean, promise: Promise) {
+        try {
+            NfcController.setPreventDefaultScreen(enabled)
+            promise.resolve(null)
+        } catch (e: Exception) {
+            promise.reject("E_NFC_INTERCEPT", e)
+        }
+    }
+
     // Required by React Native for TurboModules that emit events
     override fun addListener(eventName: String) {}
     override fun removeListeners(count: Double) {}

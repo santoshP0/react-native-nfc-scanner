@@ -32,6 +32,7 @@ object NfcController {
     private const val TAG = "OnCallNfcController"
 
     private val dispatchEnabled = AtomicBoolean(false)
+    private val preventDefaultScreen = AtomicBoolean(false)
     private var nfcAdapter: NfcAdapter? = null
     private var appContext: Context? = null
 
@@ -69,12 +70,30 @@ object NfcController {
     /** Disable NFC dispatch and stop the guard service. */
     fun disableDispatchHandling() {
         if (dispatchEnabled.compareAndSet(true, false)) {
-            setDispatchComponentEnabled(false)
+            if (!preventDefaultScreen.get()) {
+                setDispatchComponentEnabled(false)
+            }
             stopLifecycleGuard()
         }
     }
 
     fun isDispatchEnabled(): Boolean = dispatchEnabled.get()
+
+    /**
+     * When true, the NFC dispatch component stays enabled even when scanning
+     * is stopped, silently consuming any tag intents so the default Android
+     * NFC UI never appears.
+     */
+    fun setPreventDefaultScreen(enabled: Boolean) {
+        preventDefaultScreen.set(enabled)
+        if (enabled) {
+            setDispatchComponentEnabled(true)
+        } else if (!dispatchEnabled.get()) {
+            setDispatchComponentEnabled(false)
+        }
+    }
+
+    fun isPreventDefaultScreen(): Boolean = preventDefaultScreen.get()
 
     /** Enable reader mode on the given activity to intercept NFC tags directly. */
     fun enableReaderMode(activity: Activity?) {

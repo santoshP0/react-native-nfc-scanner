@@ -7,6 +7,7 @@ export interface Spec extends TurboModule {
   isSupported(): Promise<boolean>;
   isEnabled(): Promise<boolean>;
   goToNfcSetting(): Promise<boolean>;
+  preventDefaultNfcScreen(enabled: boolean): Promise<void>;
 
   // Required by React Native for TurboModules that emit events
   addListener(eventName: string): void;

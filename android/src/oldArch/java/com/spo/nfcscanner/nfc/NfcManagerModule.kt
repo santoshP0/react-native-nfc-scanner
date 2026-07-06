@@ -123,6 +123,16 @@ class NfcManagerModule(context: ReactApplicationContext) :
     }
 
     @ReactMethod
+    fun preventDefaultNfcScreen(enabled: Boolean, promise: Promise) {
+        try {
+            NfcController.setPreventDefaultScreen(enabled)
+            promise.resolve(null)
+        } catch (e: Exception) {
+            promise.reject("E_NFC_INTERCEPT", e)
+        }
+    }
+
+    @ReactMethod
     fun addListener(eventName: String) {}
 
     @ReactMethod

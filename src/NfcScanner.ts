@@ -74,6 +74,15 @@ export function goToNfcSetting(): Promise<boolean> {
 }
 
 /**
+ * When enabled, NFC tags are silently consumed even when scanning is stopped,
+ * preventing the default Android NFC dialog from appearing.
+ */
+export function preventDefaultNfcScreen(enabled: boolean): Promise<void> {
+  if (!getNfcNative()) throw new Error(ANDROID_ONLY_ERROR);
+  return getNfcNative()!.preventDefaultNfcScreen(enabled);
+}
+
+/**
  * Subscribe to NFC events from the native module.
  * Returns an EmitterSubscription — call .remove() to clean up.
  *

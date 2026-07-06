@@ -77,6 +77,7 @@ function ScanScreen() {
 | `isSupported()` | `Promise<boolean>` | Check if device has NFC hardware |
 | `isEnabled()` | `Promise<boolean>` | Check if NFC is turned on |
 | `goToNfcSetting()` | `Promise<boolean>` | Open Android NFC settings |
+| `preventDefaultNfcScreen(enabled)` | `Promise<void>` | When `true`, silently consume NFC tags while not scanning (prevents default Android NFC dialog) |
 | `addNfcListener(event, cb)` | `EmitterSubscription` | Subscribe to scan events. Call `.remove()` to unsubscribe |
 
 All methods throw if called on iOS. Guard with `Platform.OS === 'android'`.
