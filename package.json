@@ -1,6 +1,6 @@
 {
   "name": "@santoshpk/react-native-nfc-scanner",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "Android NFC scanner for React Native — supports both foreground and background scanning with latest RN compatibility",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
